@@ -5,21 +5,6 @@
             [hickory.core :as html]
             [puget.printer :refer [cprint]]))
 
-(def archives (slurp "mtg.xml"))
-
-(def document (-> archives html/parse html/as-hickory))
-
-(def raw (-> document
-           :content (nth 2)
-           :content second
-           :content first
-           :content second
-           :content (nth 10)
-           :content (nth 6)
-           :content first))
-
-(def entry (-> raw html/parse html/as-hickory))
-
 (def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
 (def local-url "http://localhost:8000/mtg.xml")
 
@@ -27,9 +12,22 @@
 
 (def categories (map #(nth (string/split (:link %) #"/") 6) (:entries feed)))
 
-(defn -main [lol]
-  (case lol
-    ;"rss" (cprint (rss/parse-feed archives))
-    "hickory" (cprint (html/as-hickory (html/parse archives)))
-    "hiccup" (cprint (html/as-hiccup (html/parse archives)))
-    (println "eh?")))
+(defn category [entry]
+  (nth (string/split (:link entry) #"/") 6))
+
+(def blacklist #{"daily-deck"
+                "top-decks"
+                "week-was"
+                "reconstructed"
+                "command-tower"
+                "perilous-research"
+                "organized-play"
+                "serious-fun"
+                "top-25"})
+
+(def blacklisted (filter #(contains? blacklist (category %)) (:entries feed)))
+(def okay (filter #(not (contains? blacklist (category %))) (:entries feed)))
+
+(defn -main []
+  (println "blacklisted: " (count blacklisted))
+  (println "okay: " (count okay)))

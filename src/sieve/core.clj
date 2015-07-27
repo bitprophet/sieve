@@ -3,7 +3,6 @@
             [clojure.xml :as xml]
             [org.httpkit.client :as http]
             [net.cgrand.enlive-html :as enlive]
-            [clojure.data.xml :as data-xml]
             [clojure.zip :as zip]
             [hiccup.util :refer [escape-html]]
             [puget.printer :refer [cprint]]))
@@ -24,15 +23,13 @@
 
 (def parsed (xml/parse local-url))
 
-(def data-parsed (data-xml/parse-str (slurp "mtg.xml")))
-
-(defn -main [] (-> data-parsed cprint))
-
 ; TODO:
-; - take the xml/parse -> xml-zip tree
-; - nuke items which don't match blacklist
-; - for those, replace the article content with itself run thru escape-html
+; - (/) take the xml/parse -> xml-zip tree
+; - (/) nuke items which don't match blacklist
+; - (/) for those, replace the article content with itself run thru escape-html
 ;   - can just copy/paste that instead of requiring all of hiccup maybe, shrug
+; - (/) ditto for all content actually, which should mostly just be the top
+;   level link, and item links
 ; - render
 ; - re-insert nuked-on-parse stylesheet line somehow
 
@@ -43,16 +40,17 @@
 (defn category [item]
   (-> item link (string/split #"/") (nth 6)))
 
-; The RSS XML looks like so:
-; - top level 'rss' tag (document)
-;   - 'channel' tag (-> document :content first)
-;     - 'title' tag (-> document :content first :content first)
-;     - 'link' tag (-> document :contnet first :content second)
-;     - 'description' tag  (-> document :content first :content (nth 2))
-;     - 'language' tag  (-> document :contnet first :content (nth 3))
-;     - rest of content-vector members of 'channel' are the 'item' tags (nth 4
-;     through nth count)
-;
-; What we want is to return the input, sans the 'item' tags in the 'channel'
-; content whose 'link' tags' URIs contain blacklisted categories.
-;(def filtered-for-categories [document])
+(defn nuke-if-blacklisted [node]
+  (if (contains? blacklist (category node))
+    nil
+    node))
+
+(defn TRANSFORM [document]
+  (enlive/at
+    document
+    [:item] nuke-if-blacklisted
+    [:description] escape-html
+    [:item :> :description] (fn [node] [(apply str (take 25 (:content node)))])))
+
+(defn -main []
+  

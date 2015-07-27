@@ -2,11 +2,11 @@
   (:require [clojure.string :as string]
             [clojure.xml :as xml]
             [net.cgrand.enlive-html :as enlive]
+            [ring.util.response [:refer charset]]
             [hiccup.util :refer [escape-html]]))
 
 
 (def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
-(def local-url "http://localhost:8000/mtg.xml")
 
 (def blacklist #{"daily-deck"
                 "top-decks"
@@ -19,16 +19,6 @@
                 "top-25"})
 
 (def xml-stylesheet-line "<?xml-stylesheet type=\"text/xsl\" href=\"http://magic.wizards.com/sites/all/themes/wiz_mtg/xml/rss.xsl\"?>")
-
-(def parsed (xml/parse local-url))
-
-; TODO:
-; - html-escape first ('rss') tag attrs' values (they aren't counted as
-;   'content') (maybe just update the selector for that line?)
-; - re-insert nuked-on-parse stylesheet line somehow - must be done
-;   post-render and pre-write, of course.
-;     - output is line-oriented so can probs just split on newline -> insert
-;     -> join on newline?
 
 
 (defn link [item]
@@ -77,5 +67,8 @@
     insert-stylesheet))
 
 
-(defn -main []
-  (spit "zomg.xml" process-to-str local-url))
+; Just serve up a processed backend request for now. Seems fast enough?
+; TODO: if MTG backend goes back to previously observed slow behavior, may want
+; to start caching/prefetching or something.
+(defn handler [request]
+  {:body (process feed-url)})

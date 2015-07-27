@@ -5,10 +5,11 @@
   :license {:name "BSD 2-Clause License"
             :url "http://opensource.org/licenses/BSD-2-Clause"}
   :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/data.xml "0.0.8"]
+                 [hiccup "1.0.5"]
                  [ring "1.4.0"]
-                 [feedparser-clj "0.2"]
                  [http-kit "2.1.19"]
-                 [hickory "0.5.1"]]
+                 [enlive "1.1.6"]]
 
   ;; Build-time options
   :main ^:skip-aot sieve.core

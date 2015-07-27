@@ -21,6 +21,8 @@
                 "serious-fun"
                 "top-25"})
 
+(def xml-stylesheet-line "<?xml-stylesheet type=\"text/xsl\" href=\"http://magic.wizards.com/sites/all/themes/wiz_mtg/xml/rss.xsl\"?>")
+
 (def parsed (xml/parse local-url))
 
 ; TODO:
@@ -56,11 +58,19 @@
     ; xml/parse unescaped them for us.
     #{[:description] [:link]} #(update-in % [:content 0] escape-html)))
 
-(defn render-to-file [file document]
+(defn render [document]
   ; Result of parsing/transforming is a one-tuple, gotta unpack it for emit to
   ; be happy.
-  (spit file (with-out-str (xml/emit (first document)))))
+  (with-out-str (xml/emit (first document))))
+
+(defn insert-stylesheet [rendered]
+  ; For whatever reason, xml/parse preserves <?xml> but NOT <?xml-stylesheet>.
+  (let [lines (string/split-lines rendered)]
+    (string/join "\n" (apply conj
+                             (subvec lines 0 1)
+                             xml-stylesheet-line
+                             (subvec lines 1)))))
 
 
 (defn -main []
-  (render-to-file "zomg.xml" (TRANSFORM parsed)))
+  (spit "zomg.xml" (insert-stylesheet (render (TRANSFORM parsed)))))

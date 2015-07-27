@@ -1,11 +1,8 @@
 (ns sieve.core
   (:require [clojure.string :as string]
             [clojure.xml :as xml]
-            [org.httpkit.client :as http]
             [net.cgrand.enlive-html :as enlive]
-            [clojure.zip :as zip]
-            [hiccup.util :refer [escape-html]]
-            [puget.printer :refer [cprint]]))
+            [hiccup.util :refer [escape-html]]))
 
 
 (def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
@@ -45,7 +42,7 @@
     nil
     node))
 
-(defn TRANSFORM [document]
+(defn nuke-and-escape [document]
   (enlive/at
     document
     ; Escape the xml:base URL, MTG's RSS feed has GET params.
@@ -54,8 +51,9 @@
     [:rss] #(update-in % [:attrs :xml:base] escape-html)
     ; Remove blacklisted item tags (based on URL component)
     [:item] nuke-if-blacklisted
-    ; Escape all description tags since they tend to contain raw HTML and
-    ; xml/parse unescaped them for us.
+    ; Escape all remaining description tags since they tend to contain raw HTML
+    ; and xml/parse unescaped them for us. Ditto links, which often have GET
+    ; params.
     #{[:description] [:link]} #(update-in % [:content 0] escape-html)))
 
 (defn render [document]
@@ -71,6 +69,13 @@
                              xml-stylesheet-line
                              (subvec lines 1)))))
 
+(defn process [url]
+  (-> url
+    xml/parse
+    nuke-and-escape
+    render
+    insert-stylesheet))
+
 
 (defn -main []
-  (spit "zomg.xml" (insert-stylesheet (render (TRANSFORM parsed)))))
+  (spit "zomg.xml" process-to-str local-url))

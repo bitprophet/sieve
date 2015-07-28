@@ -10,6 +10,7 @@
 
 (def blacklist #{"command-tower"
                  "daily-deck"
+                 "magic-online"
                  "organized-play"
                  "perilous-research"
                  "reconstructed"

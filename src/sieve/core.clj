@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [clojure.xml :as xml]
             [net.cgrand.enlive-html :as enlive]
-            [hiccup.util :refer [escape-html]]))
+            [hiccup.util :refer [escape-html]]
+            [ring.adapter.jetty :refer [run-jetty]]))
 
 
 (def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
@@ -74,3 +75,11 @@
   ; typesetting characters (e.g. em-dashes).
   {:body    (process feed-url)
    :headers {"Content-Type" "application/xml; charset=utf-8"}})
+
+; When run on Heroku, $PORT is used to tell the server what local port to run
+; on; presumably their routing infrastructure sets that up dynamically and
+; eventually hooks it up to port 80.
+; Making it available via CLI arg is nice too I guess.
+(defn -main [& [port]]
+  (let [port (Integer. (or port (System/getenv "PORT") 5000))]
+    (run-jetty #'handler {:port port :join? false})))

@@ -8,15 +8,15 @@
 
 (def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
 
-(def blacklist #{"daily-deck"
-                "top-decks"
-                "week-was"
-                "reconstructed"
-                "command-tower"
-                "perilous-research"
-                "organized-play"
-                "serious-fun"
-                "top-25"})
+(def blacklist #{"command-tower"
+                 "daily-deck"
+                 "organized-play"
+                 "perilous-research"
+                 "reconstructed"
+                 "serious-fun"
+                 "top-25"
+                 "top-decks"
+                 "week-was"})
 
 (def xml-stylesheet-line "<?xml-stylesheet type=\"text/xsl\" href=\"http://magic.wizards.com/sites/all/themes/wiz_mtg/xml/rss.xsl\"?>")
 

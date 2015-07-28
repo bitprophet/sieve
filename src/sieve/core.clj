@@ -72,5 +72,5 @@
 (defn handler [request]
   ; Must set headers for clients to deal correctly with things like 'advanced'
   ; typesetting characters (e.g. em-dashes).
-  {:body (process feed-url)
+  {:body    (process feed-url)
    :headers {"Content-Type" "application/xml; charset=utf-8"}})

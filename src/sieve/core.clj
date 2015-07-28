@@ -37,8 +37,8 @@
   (enlive/at
     document
     ; Escape the xml:base URL, MTG's RSS feed has GET params.
-    ; TODO: I guess ideally we'd apply this to ALL the <rss> tag's attrs? Or even
-    ; just any attr anywhere that's a string? Meh.
+    ; TODO: I guess ideally we'd apply this to ALL the <rss> tag's attrs? Or
+    ; even just any attr anywhere that's a string? Meh.
     [:rss] #(update-in % [:attrs :xml:base] escape-html)
     ; Remove blacklisted item tags (based on URL component)
     [:item] nuke-if-blacklisted

@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [clojure.xml :as xml]
             [net.cgrand.enlive-html :as enlive]
-            [ring.util.response [:refer charset]]
             [hiccup.util :refer [escape-html]]))
 
 
@@ -71,4 +70,7 @@
 ; TODO: if MTG backend goes back to previously observed slow behavior, may want
 ; to start caching/prefetching or something.
 (defn handler [request]
-  {:body (process feed-url)})
+  ; Must set headers for clients to deal correctly with things like 'advanced'
+  ; typesetting characters (e.g. em-dashes).
+  {:body (process feed-url)
+   :headers {"Content-Type" "application/xml; charset=utf-8"}})

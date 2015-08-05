@@ -26,7 +26,12 @@
   (-> item (enlive/select [:link]) first :content first))
 
 (defn category [item]
-  (-> item link (string/split #"/") (nth 6)))
+  (let [url (link item)]
+    ; Rarely, URLs show up that AREN'T part of /articles/archive; they can't be
+    ; readily categorized.
+    (if (.startsWith url "http://magic.wizards.com/en/articles/archive/")
+      (-> url (string/split #"/") (nth 6))
+      nil)))
 
 (defn nuke-if-blacklisted [node]
   (if (contains? blacklist (category node))

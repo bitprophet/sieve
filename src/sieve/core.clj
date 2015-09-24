@@ -29,8 +29,8 @@
   (let [url (link item)]
     ; Rarely, URLs show up that AREN'T part of /articles/archive; they can't be
     ; readily categorized.
-    (if (.startsWith url "http://magic.wizards.com/en/articles/archive/")
-      (-> url (string/split #"/") (nth 6))
+    (if (.startsWith url "/en/articles/archive/")
+      (-> url (string/split #"/") (nth 4))
       nil)))
 
 (defn nuke-if-blacklisted [node]

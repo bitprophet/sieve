@@ -8,6 +8,6 @@ Highly unlikely to be of use to anybody besides myself.
 
 ## License
 
-Copyright © 2015 Jeff Forcier
+Copyright © 2016 Jeff Forcier
 
 Distributed under the BSD license.

@@ -3,7 +3,8 @@
             [clojure.xml :as xml]
             [net.cgrand.enlive-html :as enlive]
             [hiccup.util :refer [escape-html]]
-            [ring.adapter.jetty :refer [run-jetty]]))
+            [ring.adapter.jetty :refer [run-jetty]]
+            [taoensso.timbre :as timbre :refer (log debug info warn)]))
 
 
 (def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
@@ -25,6 +26,9 @@
 (defn link [item]
   (-> item (enlive/select [:link]) first :content first))
 
+(defn shortlink [item]
+  (clojure.string/replace (link item) "/en/articles/archive/" ""))
+
 (defn category [item]
   (let [url (link item)]
     ; Rarely, URLs show up that AREN'T part of /articles/archive; they can't be
@@ -35,8 +39,12 @@
 
 (defn nuke-if-blacklisted [node]
   (if (contains? blacklist (category node))
-    nil
-    node))
+    (do
+      (info "Nuked" (str "(for category '" (category node) "'):") (shortlink node))
+      nil)
+    (do
+      (info "OK:" (shortlink node))
+      node)))
 
 (defn nuke-and-escape [document]
   (enlive/at

@@ -18,7 +18,8 @@
                  "serious-fun"
                  "top-25"
                  "top-decks"
-                 "week-was"})
+                 "week-was"
+                 "daily-magic-update"})
 
 (def xml-stylesheet-line "<?xml-stylesheet type=\"text/xsl\" href=\"http://magic.wizards.com/sites/all/themes/wiz_mtg/xml/rss.xsl\"?>")
 

@@ -12,6 +12,7 @@
 (def blacklist #{"command-tower"
                  "daily-deck"
                  "magic-online"
+                 "magic-digital" ; Includes Magic Duels too, but, meh.
                  "organized-play"
                  "perilous-research"
                  "reconstructed"

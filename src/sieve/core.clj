@@ -7,7 +7,7 @@
             [taoensso.timbre :as timbre :refer (log debug info warn)]))
 
 
-(def feed-url "http://magic.wizards.com/rss/rss.xml?tags=Daily%20MTG&lang=en")
+(def feed-url "https://magic.wizards.com/en/rss/rss.xml?tags=Daily%20MTG&lang=en")
 
 (def blacklist #{"command-tower"
                  "daily-deck"
